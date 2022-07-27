@@ -51,19 +51,8 @@ local func_callback = function(string_rid)
     end
 end
 
-
-defense_info = {
-    rid = "defense_rid"
-}
-local reflect_func_list = defense_info.reflect_func_list or {}
-reflect_func_list["spe8"] = {func_callback}
-defense_info.reflect_func_list = reflect_func_list
-
 for i = 1, 300 do
-    local reflect_func_list = defense_info.reflect_func_list
-    for key, v in pairs(reflect_func_list) do
-        v[1](defense_info.rid)
-    end
+    func_callback("defense_rid")
 end
 
 print("----------------------over----------------------------")
