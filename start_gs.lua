@@ -1,60 +1,9 @@
-local rid_objects = {}
-
 local apply_err_flag
 local temp_save_status = {}
 
-CAMP_TYPE_ATTACKER = 1
-CAMP_TYPE_DEFENSER = 2
-
-attack_user2 = {
-
-    rid = "attack_user2",
-    camp = CAMP_TYPE_ATTACKER
-}
-rid_objects[attack_user2.rid] = attack_user2
-
-defense_user1 = {
-
-    rid = "defense_user1",
-    amp = CAMP_TYPE_DEFENSER
-}
-rid_objects[defense_user1.rid] = defense_user1
-
-attack_info = {
-
-    rid = "attack_rid",
-    owner = "attack_user2",
-    speciality_id = 28,
-    camp = CAMP_TYPE_ATTACKER,
-    combat_rid = "combat_template_rid",
-    hp = 1000,
-    at_pos = 1
-
-}
-
-rid_objects[attack_info.rid] = attack_info
-
 defense_info = {
-
-    rid = "defense_rid",
-    owner = "defense_user1",
-    speciality_id = 28,
-    camp = CAMP_TYPE_DEFENSER,
-    combat_rid = "combat_template_rid",
-    hp = 1000,
-    at_pos = 1
+    rid = "defense_rid"
 }
-rid_objects[defense_info.rid] = defense_info
-
-global_cob = {
-
-    rid = "combat_template_rid",
-    at_camp = {
-        [CAMP_TYPE_ATTACKER] = {attack_info},
-        [CAMP_TYPE_DEFENSER] = {defense_info}
-    }
-}
-rid_objects[global_cob.rid] = global_cob
 
 function status_apply_status(string_rid, apply_id_list)
 
@@ -103,82 +52,31 @@ function status_apply_status(string_rid, apply_id_list)
 end
 
 
-function APPLY_STATUS(source_ob, target_ob, status_list, from, effect_type)
-
-    local status_id, condition
-    local can_add_list = {}
-    for k, v in pairs(status_list) do
-        status_id = v
-        condition = {}
-        condition.source_rid = source_ob.rid
-        can_add_list[status_id] = condition
-    end
-
-    status_apply_status(target_ob.rid, can_add_list)
-end
-
-
-function add_reflect_function(source_ob, f, arg)
-    local reflect_func_list = source_ob.reflect_func_list or {}
-    reflect_func_list["spe8"] = {f, arg}
-    source_ob.reflect_func_list = reflect_func_list
-end
-
-
-function run_reflect_function(source_ob, para)
-    local reflect_func_list = source_ob.reflect_func_list
-    if not reflect_func_list then
-        return
-    end
-
-    for key, v in pairs(reflect_func_list) do
-        v[1](v[2], source_ob, para)
-    end
-end
-
-
 function test_start()
-    local list = {attack_info, defense_info}
-
-    for _, fighter in ipairs(list) do
-        local script_arg = {
-            status = {2}
-        }
-        local func = function(arg, source_ob, para)
-            for i = 1, 1000 do
-                APPLY_STATUS(source_ob, para.source_ob, script_arg.status)
-            end
+    local script_arg = {
+        status = {2}
+    }
+    local func_callback = function(string_rid)
+        local status_id, condition
+        local can_add_list = {}
+        for k, v in pairs(script_arg.status) do
+            status_id = v
+            condition = {}
+            can_add_list[status_id] = condition
         end
 
-
-        add_reflect_function(fighter, func, nil)
+        status_apply_status(string_rid, can_add_list)
     end
 
+
+    local reflect_func_list = defense_info.reflect_func_list or {}
+    reflect_func_list["spe8"] = {func_callback}
+    defense_info.reflect_func_list = reflect_func_list
+
     for i = 1, 300 do
-        global_cob.sort_rid_list = nil
-
-        local action_list = {}
-        local command = {
-            action = ACTION_CAST,
-            source_rid = attack_info.rid,
-            skill_id = 219,
-            no_cost = 1
-        }
-        action_list[#action_list + 1] = command
-
-        for _, command in ipairs(action_list) do
-            local action_cnt = 3
-            for i = 1, action_cnt do
-                local source_rid = attack_info.rid
-                local attack_info = rid_objects[source_rid]
-                for i = 1, 10 do
-                    local para = {
-                        source_ob = attack_info,
-                        target_ob = defense_info
-                    }
-                    run_reflect_function(defense_info, para)
-                end
-            end
+        local reflect_func_list = defense_info.reflect_func_list
+        for key, v in pairs(reflect_func_list) do
+            v[1](defense_info.rid)
         end
     end
 end
