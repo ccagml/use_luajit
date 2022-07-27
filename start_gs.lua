@@ -1,17 +1,12 @@
 local apply_err_flag
 local temp_save_status = {}
 
-local script_arg = {
-    status = {2}
-}
 local func_callback = function(string_rid)
-    local status_id, condition
+    local new_status_id, new_apply_info
     local apply_id_list = {}
-    for k, v in pairs(script_arg.status) do
-        status_id = v
-        condition = {}
-        apply_id_list[status_id] = condition
-    end
+    new_status_id = 2
+    new_apply_info = {}
+    apply_id_list[new_status_id] = new_apply_info
 
     local status_id, new_status, condition
     local target_status = temp_save_status[string_rid] or {}
@@ -24,6 +19,8 @@ local func_callback = function(string_rid)
             if info.status_id == status_id then
                 new_status = nil
                 break
+            else
+                -- assert(not(info.status_id == status_id))
             end
         end
         if new_status then
