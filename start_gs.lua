@@ -1,6 +1,6 @@
 local target_status = {}
 
-for for_i = 1, 1000 do
+for for_i = 1, 100000 do
     local apply_id_list = {}
     apply_id_list[2] = {}
 
@@ -23,6 +23,4 @@ for for_i = 1, 1000 do
         end
     end
 end
-
-print("----------------------over----------------------------")
 
