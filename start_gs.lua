@@ -1,13 +1,10 @@
-local temp_save_status = {}
+local target_status = {}
 
-local func_callback = function(string_rid, for_i)
+for for_i = 1, 1000 do
     local apply_id_list = {}
-    local new_status_id = 2
-    local new_apply_info = {}
-    apply_id_list[new_status_id] = new_apply_info
+    apply_id_list[2] = {}
 
     local status_id, new_status
-    local target_status = temp_save_status[string_rid] or {}
     for k, v in pairs(apply_id_list) do
         status_id = k
         v.status_id = status_id
@@ -17,7 +14,7 @@ local func_callback = function(string_rid, for_i)
                 new_status = nil
                 break
             else
-                print("error--- for_i == 95? ", (for_i == 95), for_i, info.status_id, status_id, info.status_id == status_id)
+                print("error--- ", info.status_id == status_id, info.status_id, status_id, for_i)
                 assert(not (info.status_id == status_id))
             end
         end
@@ -25,12 +22,6 @@ local func_callback = function(string_rid, for_i)
             target_status[#target_status + 1] = v
         end
     end
-    temp_save_status[string_rid] = target_status
-end
-
-
-for i = 1, 300 do
-    func_callback("defense_rid", i)
 end
 
 print("----------------------over----------------------------")
